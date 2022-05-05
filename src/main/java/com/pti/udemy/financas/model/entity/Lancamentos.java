@@ -1,10 +1,11 @@
 package com.pti.udemy.financas.model.entity;
 
 import lombok.Data;
+import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @Entity
@@ -28,18 +29,34 @@ public class Lancamentos {
     @Column(name = "valor")
     private BigDecimal valor;
 
-    @Column(name = "tipo")
-    private String tipo;
-
     @Column(name = "status")
-    private String status;
+    @Enumerated(value = EnumType.STRING)
+    private StatusLancamento status;
+
+    @Column(name = "tipo")
+    @Enumerated(value = EnumType.STRING)
+    private TipoLancamento tipo;
 
     @Column(name = "data_cadastro")
-    private Date dataCadastro;
+    @Convert(converter = Jsr310JpaConverters.LocalDateConverter.class)
+    private LocalDate dataCadastro;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario")
     private Usuario idUsuario;
 
-
+    @Override
+    public String toString() {
+        return "Lancamentos{" +
+                "id=" + id +
+                ", descricao='" + descricao + '\'' +
+                ", mes=" + mes +
+                ", ano=" + ano +
+                ", valor=" + valor +
+                ", status=" + status +
+                ", tipo=" + tipo +
+                ", dataCadastro=" + dataCadastro +
+                ", idUsuario=" + idUsuario +
+                '}';
+    }
 }
