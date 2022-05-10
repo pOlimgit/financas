@@ -1,5 +1,7 @@
 package com.pti.udemy.financas.model.entity;
 
+import com.pti.udemy.financas.model.enums.StatusLancamento;
+import com.pti.udemy.financas.model.enums.TipoLancamento;
 import lombok.Data;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 

@@ -1,4 +1,4 @@
-package com.pti.udemy.financas.model.entity;
+package com.pti.udemy.financas.model.enums;
 
 public enum TipoLancamento {
 
