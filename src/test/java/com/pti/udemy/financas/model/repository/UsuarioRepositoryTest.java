@@ -11,6 +11,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Optional;
+
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @DataJpaTest//Cria uma instância no H2 e após o teste dá rollback, inclusive em @Transactions(Salvamentos e Commits);
@@ -59,12 +61,22 @@ public class UsuarioRepositoryTest {
         //Cenario
         //Já foi preparado com a passagem do método criarUsuario() como argumento na Acao;
         //Acao
-        Usuario savedUser = usuarioRepository.save(criarUsuario());
+        Usuario savedUser = testEntityManager.persist(criarUsuario());
         //Verificacao
         Assertions.assertThat(savedUser.getId()).isNotNull();
     }
 
     //Testes de Autenticacao de Usuario
+
+    @Test
+    public void deveBuscarUsuarioPorEmail() {
+        //Cenario
+        Usuario savedUser = testEntityManager.persist(criarUsuario());
+        //Acao
+        Optional<Usuario> userFinded = usuarioRepository.findByEmail(savedUser.getEmail());
+        //Verificacao
+        Assertions.assertThat(userFinded.isPresent());
+    }
 
     @Test
     public void deveRetornarVazioAoBuscarUmUsuarioInexistenteNaBasePorEmail(){
