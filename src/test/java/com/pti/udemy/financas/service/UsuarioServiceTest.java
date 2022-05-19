@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -22,13 +23,46 @@ public class UsuarioServiceTest {
 
     //@MockBean
     UsuarioRepository usuarioRepositoryMockado = Mockito.mock(UsuarioRepository.class);
-    UsuarioService usuarioService = new UsuarioServiceImpl(usuarioRepositoryMockado);
+    @SpyBean//Similar ao Mock, porém, permite escolher quais métodos simular;
+    UsuarioServiceImpl usuarioService;
 
     public Usuario criarUsuario(){
         Usuario user = new Usuario();
+        user.setId(1l);
+        user.setNome("Paul");
         user.setEmail("email@email.com.br");
         user.setSenha("senha");
         return user;
+    }
+
+    @Test
+    public void deveSalvarUsuarioNoBancoSemErro(){
+        Assertions.assertDoesNotThrow(() -> {
+
+        //Cenario
+        Usuario user = criarUsuario();
+        Mockito.doNothing().when(usuarioService).validarEmail(Mockito.anyString());
+        Mockito.when(usuarioRepositoryMockado.save(user)).thenReturn(user);
+        //Acao
+        Usuario savedUser = usuarioService.salvar(user);
+        //Verificacao
+            org.assertj.core.api.Assertions.assertThat(savedUser).isNotNull();
+            org.assertj.core.api.Assertions.assertThat(savedUser.getId()).isNotNull();
+            org.assertj.core.api.Assertions.assertThat(savedUser.getEmail()).isNotNull();
+            org.assertj.core.api.Assertions.assertThat(savedUser.getSenha()).isNotNull();
+            org.assertj.core.api.Assertions.assertThat(savedUser.getNome()).isNotNull();
+        });
+    }
+
+    @Test
+    public void deveLancarErroAoTentarSalvarUsuario(){
+        Assertions.assertThrows(RegraNegocioException.class, () -> {
+           //Cenario
+           Usuario user = criarUsuario();
+           Mockito.when(usuarioRepositoryMockado.existsByEmail(user.getEmail())).thenReturn(true);
+           //Acao
+            usuarioService.salvar(user);
+        });
     }
 
     @Test
