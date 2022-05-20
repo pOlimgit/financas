@@ -24,7 +24,7 @@ public class UsuarioServiceTest {
     //@MockBean
     UsuarioRepository usuarioRepositoryMockado = Mockito.mock(UsuarioRepository.class);
     @SpyBean//Similar ao Mock, porém, permite escolher quais métodos simular;
-    UsuarioServiceImpl usuarioService;
+    UsuarioService usuarioService;
 
     public Usuario criarUsuario(){
         Usuario user = new Usuario();
@@ -59,7 +59,7 @@ public class UsuarioServiceTest {
         Assertions.assertThrows(RegraNegocioException.class, () -> {
            //Cenario
            Usuario user = criarUsuario();
-           Mockito.when(usuarioRepositoryMockado.existsByEmail(user.getEmail())).thenReturn(true);
+           Mockito.doThrow(RegraNegocioException.class).when(usuarioService).validarEmail(user.getEmail());
            //Acao
             usuarioService.salvar(user);
         });
@@ -84,10 +84,9 @@ public class UsuarioServiceTest {
     public void deveLancarErroQuandoNaoEncontrarEmailUsuarioInformado(){
         Assertions.assertThrows(AutenticacaoException.class, () ->{
             //Cenario
-            Usuario user = criarUsuario();
-            Mockito.when(usuarioRepositoryMockado.findByEmail(user.getEmail())).thenReturn(Optional.ofNullable(null));
+            Mockito.when(usuarioRepositoryMockado.findByEmail(Mockito.anyString())).thenReturn(Optional.empty());
             //Acao
-            usuarioService.autenticar(user.getEmail(), user.getSenha());
+            usuarioService.autenticar("email@email.com", "senha");
         });
     }
 
@@ -118,9 +117,10 @@ public class UsuarioServiceTest {
     public void retornarExceptionAoConfirmarExistenciaDeEmailDeUsuarioNoBanco(){
         Assertions.assertThrows(RegraNegocioException.class, () -> {
             //Cenario
-            Mockito.when(usuarioRepositoryMockado.existsByEmail(Mockito.anyString())).thenReturn(true);
+            Usuario user = criarUsuario();
+            Mockito.when(usuarioRepositoryMockado.existsByEmail(user.getEmail())).thenReturn(true);
             //Acao
-            usuarioService.validarEmail("user@email.com");
+            usuarioService.validarEmail(user.getEmail());
             //Verificacao
             //Verificacao feita atavés do método assertThrows
         });
