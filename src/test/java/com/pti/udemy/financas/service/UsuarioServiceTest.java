@@ -4,7 +4,6 @@ import com.pti.udemy.financas.exceptions.AutenticacaoException;
 import com.pti.udemy.financas.exceptions.RegraNegocioException;
 import com.pti.udemy.financas.model.entity.Usuario;
 import com.pti.udemy.financas.model.repository.UsuarioRepository;
-import com.pti.udemy.financas.service.impl.UsuarioServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +27,7 @@ public class UsuarioServiceTest {
 
     public Usuario criarUsuario(){
         Usuario user = new Usuario();
-        user.setId(1l);
+        user.setId(1L);
         user.setNome("Paul");
         user.setEmail("email@email.com.br");
         user.setSenha("senha");
@@ -62,6 +61,8 @@ public class UsuarioServiceTest {
            Mockito.doThrow(RegraNegocioException.class).when(usuarioService).validarEmail(user.getEmail());
            //Acao
             usuarioService.salvar(user);
+           //Verificacao
+            Mockito.verify(usuarioRepositoryMockado, Mockito.never()).save(user);
         });
     }
 
@@ -102,7 +103,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
-    public void nãoDeveRetornarExcecaoPorAusênciaDeEmailDeUsuarioNoBanco() {
+    public void naoDeveRetornarExcecaoPorAusenciaDeEmailDeUsuarioNoBanco() {
         Assertions.assertDoesNotThrow(() -> {
             //Cenário
             Mockito.when(usuarioRepositoryMockado.existsByEmail(Mockito.anyString())).thenReturn(false);
