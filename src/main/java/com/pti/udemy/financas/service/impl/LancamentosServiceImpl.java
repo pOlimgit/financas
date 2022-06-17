@@ -4,6 +4,8 @@ import com.pti.udemy.financas.model.entity.Lancamentos;
 import com.pti.udemy.financas.model.enums.StatusLancamento;
 import com.pti.udemy.financas.model.repository.LancamentosRepository;
 import com.pti.udemy.financas.service.LancamentosService;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -33,11 +35,18 @@ public class LancamentosServiceImpl implements LancamentosService {
     }
 
     @Override
+    @Transactional
     public List<Lancamentos> consultar(Lancamentos lancamentosFiltro) {
-        return null;
+        Example example = Example.of(lancamentosFiltro,
+                ExampleMatcher.matching()
+                        .withIgnoreCase()
+                        .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
+        );
+        return repository.findAll(example);
     }
 
     @Override
+    @Transactional
     public void excluir(Lancamentos lancamentos) {
         Objects.requireNonNull(lancamentos.getId());
         repository.delete(lancamentos);
