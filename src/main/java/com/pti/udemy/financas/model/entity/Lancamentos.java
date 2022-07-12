@@ -45,7 +45,7 @@ public class Lancamentos {
 
     @ManyToOne
     @JoinColumn(name = "id_usuario")
-    private Usuario idUsuario;
+    private Usuario Usuario;
 
     @Override
     public String toString() {
@@ -58,7 +58,7 @@ public class Lancamentos {
                 ", status=" + status +
                 ", tipo=" + tipo +
                 ", dataCadastro=" + dataCadastro +
-                ", idUsuario=" + idUsuario +
+                ", idUsuario=" + Usuario +
                 '}';
     }
 }
